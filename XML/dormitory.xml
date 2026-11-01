@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<dormitory>
+  <student id="1" fullName="Коваленко Андрій Петрович" faculty="Факультет комп'ютерних наук та кібернетики" department="Кафедра інтелектуальних програмних систем" course="3" email="kovalenko@outlook.com" phone="+380501112233">
+    <residence dormitory="Гуртожиток №3" room="214" dateFrom="2024-09-01" dateTo="2025-06-30"/>
+    <residence dormitory="Гуртожиток №3" room="305" dateFrom="2025-09-01" dateTo="2026-06-30"/>
+  </student>
+  <student id="2" fullName="Шевченко Ірина Олегівна" faculty="Механіко-математичний факультет" course="2">
+    <residence dormitory="Гуртожиток №5" room="118" dateFrom="2025-09-01" dateTo="2026-06-30"/>
+  </student>
+  <student id="3" fullName="Бондаренко Максим Іванович" faculty="Факультет комп'ютерних наук та кібернетики" department="Кафедра теорії та технології програмування" course="4">
+    <residence dormitory="Гуртожиток №3" room="221" dateFrom="2022-09-01" dateTo="2023-06-30"/>
+    <residence dormitory="Гуртожиток №4" room="402" dateFrom="2023-09-01" dateTo="2026-06-30"/>
+  </student>
+  <student id="4" fullName="Мельник Олена Василівна" faculty="Радіофізичний факультет" department="Кафедра квантової радіофізики" course="1" phone="+380671234567">
+    <residence dormitory="Гуртожиток №5" room="107" dateFrom="2026-09-01" dateTo="2027-06-30"/>
+  </student>
+  <student id="5" fullName="Ткаченко Дмитро Сергійович" faculty="Механіко-математичний факультет" department="Кафедра математичного аналізу" course="3" email="tkachenko@ukr.net">
+    <residence dormitory="Гуртожиток №2" room="512" dateFrom="2024-09-01" dateTo="2026-06-30"/>
+  </student>
+  <student id="6" fullName="Лисенко Софія Андріївна" faculty="Факультет інформаційних технологій" course="2" email="lysenko@gmail.com" phone="+380931234000" group="ІПЗ-21">
+    <residence dormitory="Гуртожиток №4" room="310" dateFrom="2025-09-01" dateTo="2026-06-30"/>
+  </student>
+  <student id="7" fullName="Гриценко Богдан Миколайович" faculty="Факультет інформаційних технологій" department="Кафедра інформаційних систем" course="4">
+    <residence dormitory="Гуртожиток №2" room="233" dateFrom="2023-09-01" dateTo="2024-06-30"/>
+    <residence dormitory="Гуртожиток №4" room="115" dateFrom="2024-09-01" dateTo="2026-06-30"/>
+  </student>
+</dormitory>
