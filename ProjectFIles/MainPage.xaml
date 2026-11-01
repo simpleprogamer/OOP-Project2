@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp1.MainPage"
+             Title="Гуртожиток - пошук в XML">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="16,0"
+            Spacing="10">
+            <Label Text="1. Файл" FontAttributes="Bold"/>
+            <HorizontalStackLayout Spacing="8">
+                <Button Text="Відкрити XML" Clicked="OnOpenFile"/>
+                <Button Text="Завантажити XML" Clicked="OnLoadXML"/>
+            </HorizontalStackLayout>
+            <Label Text="{Binding FilePath}" FontSize="12"/>
+            <Label Text="2. Атрибути для пошуку (ті, що є у файлі)" FontAttributes="Bold" />
+            <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding AvailableAttributes}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
+                        <HorizontalStackLayout Margin="0,0,12,0">
+                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
+                            <Label Text="{Binding Name}" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </FlexLayout>
+
+            <Label Text="3. Ключові слова (через кому)" FontAttributes="Bold"/>
+            <Entry Text="{Binding Keywords, Mode=TwoWay}" Placeholder="Наприклад: Іван, Кібернетика" />
+            <Label Text="4. Метод аналізу" FontAttributes="Bold" />
+            <Picker ItemsSource="{Binding Strategies}"
+                    ItemDisplayBinding="{Binding Name}"
+                    SelectedItem="{Binding SelectedStrategy, Mode=TwoWay}" />
+            <HorizontalStackLayout Spacing="8">
+                <Button Text="Пошук" Clicked="OnSearch"/>
+                <Button Text="Перетворити в HTML" Clicked="OnTransform" />
+                <Button Text="Очистити" Clicked="OnClear"/>
+                <Button Text="Вихід" Clicked="OnExit"/>
+            </HorizontalStackLayout>
+            <Label Text="{Binding Status}" FontSize="12"/>
+            <Border Stroke="Gray" StrokeThickness="1" HeightRequest="380">
+                <Grid>
+                    <Editor Text ="{Binding OutputText}" IsReadOnly="True"
+                            IsVisible="{Binding IsTextVisible}"/>
+                    <WebView x:Name="htmlView" IsVisible="{Binding IsHtmlVisible}"></WebView>
+                </Grid>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
