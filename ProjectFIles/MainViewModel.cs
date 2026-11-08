@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
+using System.IO;
 using MauiApp1.Models;
 using MauiApp1.Strategies;
 using MauiApp1.Services;
@@ -23,6 +24,8 @@ namespace MauiApp1.ViewModels
         private bool _isHtmlVisible;
         private IAnalysisStrategy _selectedStrategy;
         private List<Resident> _results = new();
+        private SearchCriteria? _lastcriteria;
+        private string _lastmethod = string.Empty;
         public MainViewModel()
         {
             Strategies = new List<IAnalysisStrategy>
@@ -53,11 +56,7 @@ namespace MauiApp1.ViewModels
             get => _status;
             private set => Set(ref _status, value);
         }
-        public string HtmlSource
-        {
-            get;
-            private set;
-        } = string.Empty;
+        public string HtmlSource { get; private set; } = string.Empty;
         public IAnalysisStrategy SelectedStrategy
         {
             get => _selectedStrategy;
@@ -83,7 +82,7 @@ namespace MauiApp1.ViewModels
                 var attributes = _loader.LoadAttributes(Path);
                 if (attributes.Count == 0)
                 {
-                    Status = $"No attributes found in the XML file.";
+                    Status = "No attributes found in the XML file.";
                     return;
                 }
                 FilePath = Path;
@@ -95,6 +94,8 @@ namespace MauiApp1.ViewModels
                 OutputText = string.Empty;
                 HtmlSource = string.Empty;
                 IsHtmlVisible = false;
+                _results = new List<Resident>();
+                _lastcriteria = null;
                 Status = $"File downloaded. Attributes found {attributes.Count}. Choose the attribute to find";
 
             }
@@ -120,6 +121,8 @@ namespace MauiApp1.ViewModels
             {
                 _context.SetStrategy(SelectedStrategy);
                 _results = _context.ExecuteSearch(FilePath, criteria);
+                _lastcriteria=criteria;
+                _lastmethod = SelectedStrategy.Name;
                 OutputText = FormatResults(criteria);
                 IsHtmlVisible = false;
                 Status = $"Method: {SelectedStrategy.Name}. Records found: {_results.Count}";
@@ -131,10 +134,11 @@ namespace MauiApp1.ViewModels
         }
         public void TransformToHtml()
         {
+            if (_lastcriteria == null) { Status = "Run a search first: the HTML is built from the search results"; return; }/*
             if (string.IsNullOrEmpty(FilePath))
             { Status = "Choose the XML file";
                 return;
-            }
+            }*/
             if (_transformer == null)
             {
                 Status = "XSLT file not set";
@@ -145,11 +149,11 @@ namespace MauiApp1.ViewModels
                 var xslPath = Path.Combine(FileSystem.AppDataDirectory, "dormitory.xsl");
                 Status = File.ReadAllText(xslPath).Substring(0, 150);
                 return; перевірка трансформації ХТМЛ*/ 
-                HtmlSource =_transformer.Transform(FilePath);
-                var outPath = Path.Combine(FileSystem.AppDataDirectory, "dormitory.html");
+                HtmlSource =_transformer.Transform(_results, _lastcriteria, _lastmethod);
+                var outPath = Path.Combine(FileSystem.AppDataDirectory, "search_results.html");
                 File.WriteAllText(outPath, HtmlSource, new UTF8Encoding(false));
                 IsHtmlVisible = true;
-                Status = $"HTML file created at {outPath}";
+                Status = $"HTML for {_results.Count} found record(s) created at {outPath}";
             }
             catch (Exception ex)
             {
@@ -159,11 +163,13 @@ namespace MauiApp1.ViewModels
         public void Clear() 
         {
             OutputText = "";
-                        HtmlSource = "";
+            HtmlSource = "";
             IsHtmlVisible = false;
             Keywords = "";
             foreach (var a in AvailableAttributes) a.IsSelected = false;
             _results = new List<Resident>();
+            _lastcriteria = null;
+            _lastmethod = string.Empty;
             Status = "Search field and attributes cleared";
         }
         private string FormatResults(SearchCriteria criteria) 
