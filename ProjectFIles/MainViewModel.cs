@@ -5,14 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.IO;
-using MauiApp1.Models;
-using MauiApp1.Strategies;
-using MauiApp1.Services;
+using DormitoryXML.Models;
+using DormitoryXML.Strategies;
+using DormitoryXML.Services;
 
-namespace MauiApp1.ViewModels
+namespace DormitoryXML.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
+        private static readonly string[] PreferredOrder = { "faculty", "department", "group", "course", "fullName" };
         private readonly XmlAttributeLoader _loader = new();
         private readonly SearchContext _context = new();
         private HtmlTransformer? _transformer;
@@ -23,6 +24,7 @@ namespace MauiApp1.ViewModels
         private string _status = "Choose XML file";
         private bool _isHtmlVisible;
         private IAnalysisStrategy _selectedStrategy;
+        private AttributeOption? _selectedattribute;
         private List<Resident> _results = new();
         private SearchCriteria? _lastcriteria;
         private string _lastmethod = string.Empty;
@@ -36,6 +38,10 @@ namespace MauiApp1.ViewModels
         }
         public List<IAnalysisStrategy> Strategies { get; }
         public ObservableCollection<AttributeOption> AvailableAttributes { get; } = new();
+        public AttributeOption? SelectedAttribute
+        {
+            get => _selectedattribute; set => Set(ref _selectedattribute, value);
+        }
         public string FilePath
         {
             get => _filePath;
@@ -86,6 +92,8 @@ namespace MauiApp1.ViewModels
                     return;
                 }
                 FilePath = Path;
+                var ordered = PreferredOrder.Where(attributes.Contains).Concat(attributes.Where(a => !PreferredOrder.Contains(a)));
+                SelectedAttribute = null;
                 AvailableAttributes.Clear();
                 foreach (var name in attributes)
                 {
@@ -107,14 +115,13 @@ namespace MauiApp1.ViewModels
         public void Search() 
         {
             if (string.IsNullOrEmpty(FilePath)) { Status = "Choose the XML file"; return; }
-            var attributes = AvailableAttributes.Where(a => a.IsSelected).Select(a => a.Name).ToList();
-            if (attributes.Count == 0) { Status = "Choose at least one attribute"; return; }
+            if (SelectedAttribute == null) { Status = "Choose an attribute from the list"; return; }
             var keywords = Keywords.Split(new[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
             if (keywords.Count == 0) { Status = "Enter keywords (separated by commas)";
                 return;
             }
             var criteria = new SearchCriteria();
-            criteria.Attributes.AddRange(attributes);
+            criteria.AttributeNames.Add(SelectedAttribute.Name);
             criteria.Keywords.AddRange(keywords);
 
             try 
@@ -134,21 +141,14 @@ namespace MauiApp1.ViewModels
         }
         public void TransformToHtml()
         {
-            if (_lastcriteria == null) { Status = "Run a search first: the HTML is built from the search results"; return; }/*
-            if (string.IsNullOrEmpty(FilePath))
-            { Status = "Choose the XML file";
-                return;
-            }*/
+            if (_lastcriteria == null) { Status = "Run a search first: the HTML is built from the search results"; return; }
             if (_transformer == null)
             {
                 Status = "XSLT file not set";
                 return;
             }
             try 
-            {/*
-                var xslPath = Path.Combine(FileSystem.AppDataDirectory, "dormitory.xsl");
-                Status = File.ReadAllText(xslPath).Substring(0, 150);
-                return; перевірка трансформації ХТМЛ*/ 
+            {
                 HtmlSource =_transformer.Transform(_results, _lastcriteria, _lastmethod);
                 var outPath = Path.Combine(FileSystem.AppDataDirectory, "search_results.html");
                 File.WriteAllText(outPath, HtmlSource, new UTF8Encoding(false));
@@ -162,11 +162,11 @@ namespace MauiApp1.ViewModels
         }
         public void Clear() 
         {
-            OutputText = "";
-            HtmlSource = "";
+            OutputText = string.Empty;
+            HtmlSource = string.Empty;
             IsHtmlVisible = false;
-            Keywords = "";
-            foreach (var a in AvailableAttributes) a.IsSelected = false;
+            Keywords = string.Empty;
+            SelectedAttribute = null;
             _results = new List<Resident>();
             _lastcriteria = null;
             _lastmethod = string.Empty;
@@ -176,6 +176,7 @@ namespace MauiApp1.ViewModels
         {
             var sb = new StringBuilder();
             sb.AppendLine($"Analysis method: {SelectedStrategy.Name}");
+            sb.AppendLine($"Attribute: {SelectedAttribute?.Title}");
             sb.AppendLine($"Search criteria: {criteria.BuildQuery()}");
             sb.AppendLine($"Results found: {_results.Count}");
             sb.AppendLine(new string('-', 40));
