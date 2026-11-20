@@ -14,18 +14,11 @@
                 <Button Text="Завантажити XML" Clicked="OnLoadXML"/>
             </HorizontalStackLayout>
             <Label Text="{Binding FilePath}" FontSize="12"/>
-            <Label Text="2. Атрибути для пошуку (ті, що є у файлі)" FontAttributes="Bold" />
-            <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding AvailableAttributes}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate>
-                        <HorizontalStackLayout Margin="0,0,12,0">
-                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
-                            <Label Text="{Binding Name}" VerticalOptions="Center"/>
-                        </HorizontalStackLayout>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </FlexLayout>
-
+            <Label Text="2. Атрибут для пошуку (з тих, що є у файлі)" FontAttributes="Bold" />
+            <Picker Title="Оберіть атрибут"
+        ItemsSource="{Binding AvailableAttributes}"
+        ItemDisplayBinding="{Binding Title}"
+        SelectedItem="{Binding SelectedAttribute, Mode=TwoWay}" />
             <Label Text="3. Ключові слова (через кому)" FontAttributes="Bold"/>
             <Entry Text="{Binding Keywords, Mode=TwoWay}" Placeholder="Наприклад: Іван, Кібернетика" />
             <Label Text="4. Метод аналізу" FontAttributes="Bold" />
