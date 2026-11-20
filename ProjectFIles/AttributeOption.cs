@@ -1,20 +1,19 @@
-﻿using System;
+using DormitoryXML.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MauiApp1.ViewModels
+namespace DormitoryXML.ViewModels
 {
     public class AttributeOption : ViewModelBase
     {
-        private bool _isSelected;
-        public AttributeOption(string name) => Name = name;
+        
+        public AttributeOption(string name) { Name = name; Title = AttributeTitles.Get(name); }
         public string Name { get; }
-        public bool IsSelected 
-        {
-            get => _isSelected;
-            set => Set(ref _isSelected, value);
-        }
+        public string Title { get; }
+        public override string ToString() => Title;
+
     }
 }
